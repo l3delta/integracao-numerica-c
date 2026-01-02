@@ -4,12 +4,22 @@
 #include "constantes.h"
 
 double comprimento_curva(Curva C, int n){
-    
+   
+    if(n <= 0){
+        return NAN;
+    } 
+ 
+    if(!C.funcao){
+        return NAN;
+    }
+  
     double comprimento = 0.0;
-    double dx = comprimento_intervalo(C.I)/(double) n;
+    double dx = (C.I.b - C.I.a)/(double) n;
 
-    double x0, x1;
+    double x0, x1, y0, y1;
+    
     x0 = C.I.a;
+    y0 = C.funcao(x0);
 
     for(int i = 0; i < n; i++){
         
@@ -17,47 +27,71 @@ double comprimento_curva(Curva C, int n){
        
         if(i == n-1){
             x1 = C.I.b;
-        } 
+        }
+        y1 = C.funcao(x1);
 
-        Ponto P1 = {x0, C.funcao(x0)};      
-        Ponto P2 = {x1, C.funcao(x1)};
+        Ponto P1 = {x0, y0};      
+        Ponto P2 = {x1, y1};
         double d = distancia_entre_pontos(P1,P2);
         
-        x0 = x1; 
+        x0 = x1;
+        y0 = y1;
         comprimento += d;
     }
     return comprimento;
 }
 
-double area_curva_por_retangulos(Curva C, int n){
-     
-    double area = 0.0;
-    double dx = comprimento_intervalo(C.I)/(double) n;
+double integral_definida_por_retangulos_esquerda(Curva C, int n){
    
-    double x = C.I.a;
+    if(n <= 0){
+        return NAN;
+    }
+   
+    if(!C.funcao){
+        return NAN;
+    }
+
+    double area = 0.0;
+    double dx = (C.I.b - C.I.a)/(double) n;
    
     for(int i = 0; i < n; i++){        
+        double x = C.I.a + i*dx;
         double h = C.funcao(x);
         area += h*dx;
-        x += dx;
     }
     return area;
 }
 
-double area_curva_por_trapezios(Curva C, int n){
-    
+double integral_definida_por_trapezios(Curva C, int n){
+
+    if(n <= 0){
+        return NAN;
+    }
+     
+    if(!C.funcao){
+        return NAN;
+    }
+
     double area = 0.0;
-    double dx = comprimento_intervalo(C.I)/(double) n;
+    double dx = (C.I.b - C.I.a)/(double) n;
    
     double x0, x1, b, B;
     x0 = C.I.a;
     b = C.funcao(x0);
     
-    for(int i = 0; i < n; i++){        
+    for(int i = 0; i < n; i++){
+        
         x1 = x0 + dx;
+        double h = dx;
+
+        if(i == n-1){ 
+            x1 = C.I.b;
+            h = x1 - x0;
+        }
+
         B = C.funcao(x1);
 
-        area += ((b+B)*dx)/2.0;
+        area += ((b+B)*h)/2.0;
         x0 = x1;
         b = B;
     }
@@ -67,8 +101,16 @@ double area_curva_por_trapezios(Curva C, int n){
 
 double volume_solido_revolucao(Curva C, int n){
 
+    if(n <= 0){
+        return NAN;
+    }
+     
+    if(!C.funcao){
+        return NAN;
+    }
+
     double volume = 0.0;
-    double dx = comprimento_intervalo(C.I)/(double) n;
+    double dx = (C.I.b - C.I.a)/(double) n;
 
     double x0, x1, r0, r1;
     x0 = C.I.a;
