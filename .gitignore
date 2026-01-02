@@ -1,0 +1,15 @@
+# Arquivos de compilação
+*.o
+*.out
+*.exe
+
+# Pastas de build
+build/
+bin/
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Backups de editor
+*~
